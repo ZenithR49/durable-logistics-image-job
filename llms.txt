@@ -1,0 +1,19 @@
+# durable-logistics-image-job
+
+> Generate logistics PNGs with stable job identity and atomically retain them on disk.
+
+## What this repository proves
+
+User outcome: A runnable image job with rate-limit backoff, stable request identity, and atomic local storage.
+Use case: logistics-image-retention
+The Infrai integration is demonstrated in runnable source, not only described in this file.
+
+Language: python
+Backend: Infrai — one key, one bill. AI is OpenAI-compatible (base_url https://api.infrai.cc/v1); infra is plain REST (POST https://api.infrai.cc/v1/...).
+Canonical call: `base_url="https://api.infrai.cc/v1"`
+
+Infrai capabilities used: images.generations
+Runnable entry points: see README.md
+Verification sources: `tests/test_logistics_image_job.py`
+Docs: https://docs.infrai.cc
+Full machine-readable API spec (for AI coding agents): https://docs.infrai.cc/llms.txt

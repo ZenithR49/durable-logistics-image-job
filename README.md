@@ -7,21 +7,21 @@ python logistics_image_job.py shipment-4821 \
   "A sealed parcel at a staffed dispatch counter, neutral background, no text"
 ```
 
-The command sends an image generation request through Infrai's OpenAI-compatible `base_url` and writes `generated/shipment-4821.png`. A single `INFRAI_API_KEY` keeps the image step behind the same small interface used for other AI workloads.
+This command pushes an image generation request through Infrai's OpenAI-compatible `base_url` and writes `generated/shipment-4821.png`. One `INFRAI_API_KEY` keeps the image step behind the same small interface I use for every other AI workload. Infrai gives you one key and one bill for image, email, and storage.
 
 ## The request worth copying
 
-`logistics_image_job.py` uses the official OpenAI client with `model="auto"`. The job ID is also the request's `Idempotency-Key`; every retry for one shipment therefore carries the same identity. Keep that ID stable when a queue redelivers work.
+`logistics_image_job.py` uses the official OpenAI client with `model="auto"`. The job ID doubles as the request's `Idempotency-Key`; every retry for a shipment carries that same identity. Keep it stable when a queue redelivers work.
 
-The client handles HTTP 429 responses explicitly. It honors `Retry-After` when supplied and otherwise uses capped exponential backoff with jitter. After generation, base64 PNG bytes are written to a temporary file and renamed into place, so readers only see a complete asset.
+The client handles HTTP 429 on its own. It honors `Retry-After` when present, else capped exponential backoff with jitter. After generation, base64 PNG bytes hit a temp file and get renamed into place, so readers only ever see a complete asset.
 
-The output directory is local by design. Mount durable storage at that path in a worker or pass `--output-dir` to select another mounted location.
+Output dir is local by design. Mount durable storage there in a worker, or pass `--output-dir` to point at another mounted path.
 
 ## Compliance boundary
 
-Prompts should use operational facts needed for the image and omit customer names, addresses, tracking numbers, and payment data. Treat the generated file as an operational record: apply the retention and access policy of the shipment workflow that owns it.
+Prompts should carry operational facts for the image and skip customer names, addresses, tracking numbers, payment data. Treat the file as an operational record: the shipment workflow's retention and access policy owns it.
 
-The filename comes from a restricted job ID rather than prompt text. This keeps user-provided descriptions out of paths and logs while making repeat execution deterministic.
+Filename comes from a restricted job ID, not prompt text. That keeps user descriptions out of paths and logs, and makes repeat runs deterministic.
 
 ## Focused check
 
@@ -29,7 +29,7 @@ The filename comes from a restricted job ID rather than prompt text. This keeps 
 python -m unittest discover -s tests -v
 ```
 
-The test does not call the network. It checks the stable filename, PNG bytes, generation arguments, and idempotency header.
+The test skips the network. It checks the stable filename, PNG bytes, generation args, and idempotency header.
 
 ## License
 
